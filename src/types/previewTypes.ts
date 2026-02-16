@@ -9,7 +9,11 @@ export type VideoFormat = {
 };
 
 export type FormatsByExt = {
-  [ext: string]: { format_id: string; resolution: string, filesize: string }[];
+  video: Record<
+    string,
+    { format_id: string; resolution: string; filesize: string }[]
+  >;
+  audio: { format_id: string; ext: string, filesize: string }[];
 };
 
 export type ReplyPayload = {
@@ -17,6 +21,5 @@ export type ReplyPayload = {
   id: string;
   title: string;
   thumbnail: string;
-  size: number;
   formats: FormatsByExt;
 };

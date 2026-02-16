@@ -29,7 +29,6 @@ export async function previewRoute(server: FastifyInstance) {
         id: data.id,
         title: data.title,
         thumbnail: data.thumbnail,
-        size: data.filesize || data.filesize_approx,
         formats: groupFormatsByExtension(data.formats)
       };
 
