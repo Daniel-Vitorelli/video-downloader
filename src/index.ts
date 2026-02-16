@@ -5,12 +5,15 @@ import { fileURLToPath } from "url";
 import { downloadRoute } from "./routes/download.js";
 import { previewRoute } from "./routes/preview.js";
 import sse from "@fastify/sse";
+import fastifyStatic from "@fastify/static";
+import { fileRoute } from "./routes/file.js";
 
 const server = fastify();
 
 declare module "fastify" {
   interface FastifyInstance {
     downloadsDir: string;
+    address: string;
   }
 }
 
@@ -23,10 +26,17 @@ ensureDir(server.downloadsDir);
 server.register(sse as any);
 server.register(downloadRoute);
 server.register(previewRoute);
+server.register(fileRoute)
+server.register(fastifyStatic, {
+  root: path.join(server.downloadsDir),
+  prefix: "/downloads/",
+});
 
 const port = process.env.PORT || 8080;
 
 server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
+  server.address = address;
+
   if (err) {
     console.error(err);
     process.exit(1);

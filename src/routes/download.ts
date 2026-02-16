@@ -26,7 +26,7 @@ export async function downloadRoute(server: FastifyInstance) {
       }
 
       if (!format_id) {
-        return reply.status(400).send({ error: "Envie ?format_id="});
+        return reply.status(400).send({ error: "Envie ?format_id=" });
       }
 
       if (!ext) {
@@ -34,7 +34,9 @@ export async function downloadRoute(server: FastifyInstance) {
       }
 
       if (!type) {
-        return reply.status(400).send({error: "Envie ?type= \"video\" ou \"audio\""})
+        return reply
+          .status(400)
+          .send({ error: 'Envie ?type= "video" ou "audio"' });
       }
 
       if (!reply.raw.writableEnded) {
@@ -74,27 +76,42 @@ export async function downloadRoute(server: FastifyInstance) {
 
         const files = await fs.readdir(fileDir);
 
+        const fileRouteUrl = `${server.address}/file?filePath=${video_id}_${format_id}`
+
         if (files.some((f) => f.endsWith(`.${ext}`))) {
           if (!reply.raw.writableEnded) {
             reply.sse.send({
               event: "complete",
-              data: "Download já estava feito!",
+              data: {
+                message: "Download já estava feito!",
+                url: fileRouteUrl
+              },
             });
           }
         } else {
-          await downloadVideo(video_id, output, format_id, ext, type, (progress) => {
-            if (!reply.raw.writableEnded) {
-              reply.sse.send({
-                event: "progress",
-                data: progress,
-              });
-            }
-          });
+          await downloadVideo(
+            video_id,
+            output,
+            format_id,
+            ext,
+            type,
+            (progress) => {
+              if (!reply.raw.writableEnded) {
+                reply.sse.send({
+                  event: "progress",
+                  data: progress,
+                });
+              }
+            },
+          );
 
           if (!reply.raw.writableEnded) {
             reply.sse.send({
               event: "complete",
-              data: "Download concluído",
+              data: { 
+                message: "Download concluído",
+                url: fileRouteUrl
+              },
             });
           }
         }
@@ -105,15 +122,18 @@ export async function downloadRoute(server: FastifyInstance) {
           console.log(`Timer resetado para ${fileDir}`);
         }
 
-        const timer = setTimeout(async () => {
-          try {
-            await fs.rm(fileDir, { recursive: true, force: true });
-            downloadTimers.delete(fileDir);
-            console.log(`Dir: ${fileDir} removed!`);
-          } catch (error) {
-            console.error(error);
-          }
-        }, 1000 * 60 * 5);
+        const timer = setTimeout(
+          async () => {
+            try {
+              await fs.rm(fileDir, { recursive: true, force: true });
+              downloadTimers.delete(fileDir);
+              console.log(`Dir: ${fileDir} removed!`);
+            } catch (error) {
+              console.error(error);
+            }
+          },
+          1000 * 60 * 5,
+        );
 
         downloadTimers.set(fileDir, timer);
         console.log(`Dir: ${fileDir} expire in 5 minutes`);
