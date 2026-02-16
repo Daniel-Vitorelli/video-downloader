@@ -5,6 +5,7 @@ export function downloadVideo(
   outputPath: string,
   format_id: string,
   ext: string,
+  type: "video" | "audio",
   onProgress?: (data: {
     percent?: number;
     speed?: string;
@@ -13,11 +14,20 @@ export function downloadVideo(
   }) => void,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
+    let ytdlpString;
+    if (type === "video") {
+      ytdlpString = [
+        `${format_id}+bestaudio[ext=${ext === "mp4" ? "m4a" : "webm"}]/bestaudio`,
+        "--merge-output-format",
+        ext,
+      ];
+    } else {
+      ytdlpString = [format_id]
+    }
+
     const ytdlp = spawn("yt-dlp", [
       "-f",
-      `${format_id}+bestaudio[ext=${ext === "mp4" ? "m4a" : "webm"}]/bestaudio`,
-      "--merge-output-format",
-      ext,
+      ...ytdlpString,
       "-o",
       outputPath,
       "--newline",
