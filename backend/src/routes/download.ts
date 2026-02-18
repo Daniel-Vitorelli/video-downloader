@@ -45,7 +45,7 @@ export async function downloadRoute(server: FastifyInstance) {
 
       try {
         const diskSpace = await freeDiskSpace();
-        const filesize = await getVideoSize(video_id, format_id, ext, type);
+        const filesize = await getVideoSize(video_id, format_id, ext, type, server.cookiePath);
 
         if (!filesize) {
           throw new Error("Não foi possível obter tamanho do arquivo");
@@ -95,6 +95,7 @@ export async function downloadRoute(server: FastifyInstance) {
             format_id,
             ext,
             type,
+            server.cookiePath,
             (progress) => {
               if (!reply.raw.writableEnded) {
                 reply.sse.send({

@@ -1,13 +1,17 @@
 import { spawn } from "node:child_process";
+import { cookies } from "../utils/cookies.js";
 
 export async function getVideoSize(
   video_id: string,
   format_id: string,
   ext: string,
   type: "video" | "audio",
+  dir: string
 ): Promise<number> {
   let output = "";
   let errorOutput = "";
+
+  const cookiesPath = await cookies(dir);
 
   await new Promise<void>((resolve, reject) => {
     let ytdlpString;
@@ -29,6 +33,8 @@ export async function getVideoSize(
       ...ytdlpString,
       "--js-runtimes",
       "node",
+      "--cookies",
+      cookiesPath,
       video_id,
     ]);
 

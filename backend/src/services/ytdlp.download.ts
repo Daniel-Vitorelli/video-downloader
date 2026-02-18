@@ -1,11 +1,13 @@
 import { spawn } from "node:child_process";
+import { cookies } from "../utils/cookies.js";
 
-export function downloadVideo(
+export async function downloadVideo(
   video_id: string,
   outputPath: string,
   format_id: string,
   ext: string,
   type: "video" | "audio",
+  dir: string,
   onProgress?: (data: {
     percent?: number;
     speed?: string;
@@ -13,6 +15,8 @@ export function downloadVideo(
     raw?: string;
   }) => void,
 ): Promise<void> {
+  const cookiesPath = await cookies(dir);
+
   return new Promise((resolve, reject) => {
     let ytdlpString;
     if (type === "video") {
@@ -22,7 +26,7 @@ export function downloadVideo(
         ext,
       ];
     } else {
-      ytdlpString = [format_id]
+      ytdlpString = [format_id];
     }
 
     const ytdlp = spawn("yt-dlp", [
@@ -35,6 +39,8 @@ export function downloadVideo(
       "%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s",
       "--js-runtimes",
       "node",
+      "--cookies",
+      cookiesPath,
       video_id,
     ]);
 
