@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
-import { spawn } from "node:child_process";
 import type { VideoFormat, FormatsByExt, ReplyPayload } from "../types/previewTypes.js";
 import { getVideoInfo } from "../services/ytdlp.preview.js";
 import { groupFormatsByExtension } from "../utils/format.utils.js";
+import path from "node:path";
 
 export async function previewRoute(server: FastifyInstance) {
   server.get("/preview", async (request, reply) => {
@@ -13,7 +13,7 @@ export async function previewRoute(server: FastifyInstance) {
     }
 
     try {
-      const output = await getVideoInfo(url)
+      const output = await getVideoInfo(url, server.cookiePath)
 
       const data = JSON.parse(output) as {
         id: string;

@@ -1,14 +1,19 @@
 import { spawn } from "node:child_process";
+import { cookies } from "../utils/cookies.js";
 
-export async function getVideoInfo(url: string): Promise<string> {
+export async function getVideoInfo(url: string, dir: string): Promise<string> {
   let output = "";
   let errorOutput = "";
+
+  const cookiesPath = await cookies(dir);
 
   await new Promise<void>((resolve, reject) => {
     const ytdlp = spawn("yt-dlp", [
       "-J",
       "--js-runtimes",
       "node",
+      "--cookies",
+      cookiesPath,
       url,
     ]);
 
