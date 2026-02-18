@@ -32,7 +32,7 @@ server.register(fastifyStatic, {
   prefix: "/downloads/",
 });
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 3000;
 
 server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
   server.address = address;
