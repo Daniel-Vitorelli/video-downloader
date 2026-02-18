@@ -42,12 +42,12 @@ server.register(fastifyStatic, {
 const port = process.env.PORT || 8080;
 
 server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
-  server.address = address;
-
   if (err) {
     console.error(err);
     process.exit(1);
   }
+
+  server.address = process.env.URL || address;
+
   console.log(`Server listening at ${address}`);
-  console.log(process.env.PORT)
 });
