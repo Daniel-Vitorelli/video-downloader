@@ -27,6 +27,8 @@ export async function getVideoSize(
       "%(filesize,filesize_approx)r",
       "-f",
       ...ytdlpString,
+      "--js-runtimes",
+      "node",
       video_id,
     ]);
 

@@ -33,6 +33,8 @@ export function downloadVideo(
       "--newline",
       "--progress-template",
       "%(progress._percent_str)s|%(progress._speed_str)s|%(progress._eta_str)s",
+      "--js-runtimes",
+      "node",
       video_id,
     ]);
 

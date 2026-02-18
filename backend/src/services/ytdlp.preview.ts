@@ -5,7 +5,12 @@ export async function getVideoInfo(url: string): Promise<string> {
   let errorOutput = "";
 
   await new Promise<void>((resolve, reject) => {
-    const ytdlp = spawn("yt-dlp", ["-J", url]);
+    const ytdlp = spawn("yt-dlp", [
+      "-J",
+      "--js-runtimes",
+      "node",
+      url,
+    ]);
 
     ytdlp.stdout.on("data", (data) => {
       output += data.toString();
