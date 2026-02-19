@@ -8,6 +8,7 @@ import sse from "@fastify/sse";
 import fastifyStatic from "@fastify/static";
 import { fileRoute } from "./routes/file.js";
 import dotenv from 'dotenv';
+import Cors from '@fastify/cors';
 dotenv.config();
 
 const server = fastify();
@@ -38,8 +39,15 @@ server.register(fastifyStatic, {
   root: path.join(server.downloadsDir),
   prefix: "/downloads/",
 });
+server.register(Cors, {
+  origin: true
+})
 
 const port = process.env.PORT || 8080;
+
+server.get('/', (request, reply) => {
+  reply.status(200).send(`Server listening at ${server.address}`)
+})
 
 server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
   if (err) {
@@ -49,5 +57,5 @@ server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
 
   server.address = process.env.URL || address;
 
-  console.log(`Server listening at ${address}`);
+  console.log(`Server listening at ${server.address}`);
 });
